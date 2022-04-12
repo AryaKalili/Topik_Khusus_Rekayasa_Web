@@ -50,5 +50,7 @@ class BaseController extends Controller
         // E.g.: $this->session = \Config\Services::session();
 
         $this->login_user = new \App\Models\login_user();
+        $this->teacher = new \App\Models\teacher();
+        $this->course = new \App\Models\course();
     }
 }

@@ -33,36 +33,40 @@ class login extends BaseController
     $pass = $this->request->getVar('Password');
     $data = $this->login_user->where('email', $email)->first();
     $CPass = password_verify($pass, $data['password']);
-    if ($CPass) {
-      $id = $data['id_user'];
-      $status = ['status' => 'Online'];
-      $this->login_user->update($id, $status);
-      $data = $this->login_user->where('email', $email)->first();
-      session()->set('data', $data);
-      return redirect()->to('Page/index');
-    } else {
-      if (empty($data['email'])) {
-        $err = "Email is not Found";
-        session()->setFlashdata('error', $err);
-        return redirect()->to('Page/login');
+    $r = $data['status'];
+    if ($r != "Online") {
+      if ($CPass) {
+        $id = $data['id_user'];
+        $status = ['status' => 'Online'];
+        $this->login_user->update($id, $status);
+        $data = $this->login_user->where('email', $email)->first();
+        session()->set('data', $data);
+        return redirect()->to('Page/index');
       } else {
-        $err = "Email / Password incorrect";
-        session()->setFlashdata('error', $err);
-        return redirect()->to('Page/login');
+        if (empty($data['email'])) {
+          $err = "Email is not Found";
+          session()->setFlashdata('error', $err);
+          return redirect()->to('Page/login');
+        } else {
+          $err = "Email / Password incorrect";
+          session()->setFlashdata('error', $err);
+          return redirect()->to('Page/login');
+        }
       }
+    } else {
+      $err = "Account Already Used";
+      session()->setFlashdata('error', $err);
+      return redirect()->to('Page/login');
     }
   }
   public function logout()
   {
     $session = session()->get('data');
     $id = $session['id_user'];
-    $datalg = $this->login_user->where('id_user', $id)->first();
-    if (empty($datalg)) {
-      $status = ['status' => 'Offline'];
-      $this->login_user->update($id, $status);
-      $data = $this->login_user->where('id_user', $id)->first();
-      return redirect()->to('Page/login');
-    }
-    return redirect()->to('Page/index');
+    $status = ['status' => 'Offline'];
+    $this->login_user->update($id, $status);
+    $data = $this->login_user->where('id_user', $id)->first();
+    session()->remove($data);
+    return redirect()->to('Page/login');
   }
 }

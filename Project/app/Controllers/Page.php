@@ -2,14 +2,20 @@
 
 namespace App\Controllers;
 
+use App\Models\course;
 use App\Models\login_user;
+use App\Models\teacher;
 
 class Page extends BaseController
 {
   protected $login_user;
+  protected $teacher;
+  protected $course;
   public function __construct()
   {
     $this->login_user = new login_user();
+    $this->teacher = new teacher();
+    $this->course = new course();
   }
   public function index()
   {
