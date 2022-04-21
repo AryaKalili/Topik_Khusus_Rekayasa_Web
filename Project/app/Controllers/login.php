@@ -63,10 +63,15 @@ class login extends BaseController
   {
     $session = session()->get('data');
     $id = $session['id_user'];
-    $status = ['status' => 'Offline'];
-    $this->login_user->update($id, $status);
     $data = $this->login_user->where('id_user', $id)->first();
-    session()->remove($data);
-    return redirect()->to('Page/login');
+    if ($id == $data["id_user"]) {
+      $status = ['status' => 'Offline'];
+      $this->login_user->update($data["id_user"], $status);
+      session()->remove($data);
+      return redirect()->to('Page/login');
+    } else {
+      $session->get('data');
+      return redirect()->to("Page/index");
+    }
   }
 }
